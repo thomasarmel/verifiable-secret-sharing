@@ -198,8 +198,8 @@ mod tests {
         let secp = Secp256k1::new();
         let mut rng = rand::thread_rng();
         let (secret, public) = secp.generate_keypair(&mut rng);
-        let message = Message::from_slice(&[0xab; 32]).expect("32 bytes");
-        let sig = secp.sign(&message, &secret);
-        assert!(secp.verify(&message, &sig, &public).is_ok());
+        let message = Message::from_digest([0xab; 32]);
+        let sig = secp.sign_ecdsa(&message, &secret);
+        assert!(secp.verify_ecdsa(&message, &sig, &public).is_ok());
     }
 }

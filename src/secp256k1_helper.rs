@@ -4,7 +4,7 @@ use num_bigint_dig::Sign::Plus;
 use num_integer::Integer;
 use rand::{thread_rng, Rng};
 use secp256k1::constants::{CURVE_ORDER, GENERATOR_X, GENERATOR_Y, SECRET_KEY_SIZE};
-use secp256k1::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
+use secp256k1::{PublicKey, Scalar, Secp256k1, SecretKey, VerifyOnly};
 use std::ops::{Add, Mul, Sub};
 use std::sync::Once;
 /// The `Secp256k1Scalar` is a scalar, wrapping the `SecretKey`
@@ -35,10 +35,10 @@ impl Secp256k1Point {
     }
 
     fn scalar_mul(&self, other: &Secp256k1Scalar) -> Secp256k1Point {
-        let mut new_point = *self;
+        let new_point = *self;
         new_point
             .0
-            .mul_assign(get_context(), &other.0[..])
+            .mul_tweak(get_context(), &Scalar::from_be_bytes(other.0.secret_bytes()).unwrap())
             .expect("Assignment expected");
         new_point
     }
